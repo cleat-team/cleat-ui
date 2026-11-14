@@ -170,4 +170,73 @@
   --color-border: oklch(0.88 0.005 270);
   --color-text: oklch(0.2 0.01 270);
   --color-text-muted: oklch(0.55 0.01 270);
+
+  /* --------------------------------------------------
+     Nautical Material Tokens
+     -------------------------------------------------- */
+  --color-brass: #C89B3C;
+  --color-brass-hover: #D4AA4E;
+  --color-brass-subtle: #F0E4C8;
+  --color-marine: #1A3A5C;
+  --color-marine-soft: #2C5F8A;
+  --color-teak: #8B6F47;
+  --color-mahogany: #6B3A2A;
+  --color-copper-patina: #4A7C59;
+  --color-cream: #F7F5F0;
+  --color-canvas: #FAF9F6;
+  --color-foam: #E8EDF0;
+  --color-rigging: #C4B8A8;
+  --color-ink: #1C1814;
+  --color-ink-soft: #5C5550;
+  --color-ink-muted: #988E84;
+
+  /* --------------------------------------------------
+     Nautical Semantic Tokens
+     -------------------------------------------------- */
+  --color-accent: var(--color-brass);
+  --color-accent-hover: var(--color-brass-hover);
+  --color-accent-subtle: var(--color-brass-subtle);
+  --color-accent-text: var(--color-ink);
+  --color-page-bg: var(--color-cream);
+  --color-surface-alt: var(--color-foam);
+  --color-text-secondary: var(--color-ink-soft);
+  --color-tree-line: var(--color-rigging);
+
+  /* --------------------------------------------------
+     Nautical Status Tokens (for StatusDot)
+     -------------------------------------------------- */
+  --color-status-active: var(--color-copper-patina);
+  --color-status-idle: var(--color-teak);
+  --color-status-error: var(--color-mahogany);
+  --color-status-offline: var(--color-ink-muted);
+}
+
+/* ============================================================
+   Dark Theme Overrides
+   ============================================================ */
+[data-theme="dark"] {
+  --color-bg: oklch(0.18 0.005 270);
+  --color-surface: oklch(0.22 0.005 270);
+  --color-surface-hover: oklch(0.26 0.005 270);
+  --color-border: oklch(0.30 0.005 270);
+  --color-text: oklch(0.90 0.005 270);
+  --color-text-muted: oklch(0.60 0.005 270);
+
+  /* clew#453: these three were fixed light values in :root only. Literal dark
+     values, not aliases back to the light material tokens. */
+  --color-text-secondary: oklch(0.72 0.01 270);
+  --color-surface-alt: oklch(0.26 0.005 270);
+  --color-page-bg: oklch(0.20 0.005 270);
+
+  /* Invert status/feedback colors for dark backgrounds.
+     Light-mode uses light bg + dark text (100 / 700).
+     Dark-mode inverts: dark bg + light text. */
+  --color-success-100: oklch(0.25 0.03 150);
+  --color-success-700: oklch(0.75 0.08 150);
+  --color-danger-100: oklch(0.25 0.03 25);
+  --color-danger-700: oklch(0.75 0.10 25);
+  --color-warning-100: oklch(0.25 0.03 85);
+  --color-warning-700: oklch(0.78 0.14 85);
+  --color-info-100: oklch(0.25 0.03 200);
+  --color-info-700: oklch(0.75 0.08 200);
 }
