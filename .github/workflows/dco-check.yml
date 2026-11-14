@@ -1,0 +1,97 @@
+name: DCO Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  # The merge queue's entries (clew#328): checked over the commits the group
+  # adds to its parent. See "Check DCO" for what that range holds.
+  merge_group:
+    types: [checks_requested]
+  push:
+    branches: [main]
+
+concurrency:
+  # A pull request's newer push supersedes its older run; a push to a branch
+  # keeps every commit's run, because GitHub keeps one pending run per group and
+  # a quick second merge would cancel the first's (cleat#661; clew#300).
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dco:
+    name: Developer Certificate of Origin
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check DCO
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.event.after }}
+          GROUP_BASE: ${{ github.event.merge_group.base_sha }}
+          GROUP_HEAD: ${{ github.event.merge_group.head_sha }}
+        run: |
+          case "$EVENT_NAME" in
+            pull_request) BASE="$PR_BASE";     HEAD="$PR_HEAD" ;;
+            merge_group)  BASE="$GROUP_BASE";  HEAD="$GROUP_HEAD" ;;
+            *)            BASE="$PUSH_BEFORE"; HEAD="$PUSH_AFTER" ;;
+          esac
+
+          # An empty or unknown end makes the range `..` or an error, and the loop
+          # below would see no commits and print "passed". Say so instead: this is a
+          # failure of the check, not a finding about the tree (exit 2, not 1).
+          for end in "$BASE" "$HEAD"; do
+            if [ -z "$end" ] || ! git rev-parse -q --verify "$end^{commit}" >/dev/null; then
+              echo "::error::UNMEASURED: DCO cannot read the commit range for a $EVENT_NAME event (base '${BASE}', head '${HEAD}'). This is a failure of the check, not a finding about the tree."
+              exit 2
+            fi
+          done
+
+          # A merge group's range is the commits it adds to its parent: the entry's
+          # squash commit, which carries its pull request's Signed-off-by lines only
+          # because the repository's squash_merge_commit_message is COMMIT_MESSAGES.
+          # Changing that setting to PR_BODY would fail every queue entry here.
+          COMMITS=$(git log --no-merges "${BASE}..${HEAD}" --format="%H") || {
+            echo "::error::UNMEASURED: git log ${BASE}..${HEAD} failed. This is a failure of the check, not a finding about the tree."
+            exit 2
+          }
+          if [ "$EVENT_NAME" = merge_group ] && [ -z "$COMMITS" ]; then
+            echo "::error::UNMEASURED: the merge group adds no commit to its parent (${BASE}..${HEAD}); there is nothing to check."
+            exit 2
+          fi
+          echo "Checking $(printf '%s' "$COMMITS" | grep -c .) commit(s) in ${BASE}..${HEAD}"
+
+          FAILING=$(printf '%s\n' "$COMMITS" | while read -r commit; do
+            [ -n "$commit" ] || continue
+            if ! git log -1 --format="%B" "$commit" | grep -q "Signed-off-by:"; then
+              echo "  $(git log -1 --format='%h %s' "$commit")"
+            fi
+          done)
+
+          if [ -n "$FAILING" ]; then
+            echo "============================================"
+            echo "  DCO CHECK — FAILED"
+            echo "============================================"
+            echo ""
+            echo "The following commits are missing Signed-off-by:"
+            echo "$FAILING"
+            echo ""
+            echo "To fix:"
+            echo "  git rebase --signoff HEAD~N"
+            echo "  git push --force-with-lease"
+            echo ""
+            echo "For details: https://developercertificate.org/"
+            exit 1
+          fi
+
+          echo "All commits have Signed-off-by. DCO check passed."

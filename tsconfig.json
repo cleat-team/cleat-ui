@@ -5,6 +5,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "strict": true,
+    "skipLibCheck": true,
     "types": ["svelte"],
     "verbatimModuleSyntax": false
   },

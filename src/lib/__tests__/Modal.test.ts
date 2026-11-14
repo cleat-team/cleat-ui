@@ -82,7 +82,7 @@ describe('Modal', () => {
         children: textSnippet('Content'),
       },
     });
-    const backdrop = document.querySelector('.modal-backdrop')!;
+    const backdrop = document.querySelector<HTMLElement>('.modal-backdrop')!;
     await backdrop.click();
     expect(fn).toHaveBeenCalledOnce();
   });
