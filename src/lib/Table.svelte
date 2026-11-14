@@ -5,7 +5,6 @@
     key: string;
     label: string;
     sortable?: boolean;
-    html?: boolean;
   }
 
   let {
@@ -82,7 +81,7 @@
         {#each rows as row, i (i)}
           <tr>
             {#each columns as col (col.key)}
-              <td>{#if col.html}{@html String(row[col.key] ?? '')}{:else}{String(row[col.key] ?? '')}{/if}</td>
+              <td>{String(row[col.key] ?? '')}</td>
             {/each}
           </tr>
         {/each}

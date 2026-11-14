@@ -37,7 +37,6 @@
     class="modal-backdrop"
     role="presentation"
     onclick={handleBackdropClick}
-    transition:null
   >
     <div
       class="modal"

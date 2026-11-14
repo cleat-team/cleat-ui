@@ -20,7 +20,7 @@
     user = undefined as User | undefined,
     appName = 'Cleat',
     onNavigate = undefined as ((id: string) => void) | undefined,
-    sidebarCollapsed = $state(false),
+    sidebarCollapsed = false,
     children,
   }: {
     sections?: NavSection[];

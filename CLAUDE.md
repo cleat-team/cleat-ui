@@ -1,15 +1,16 @@
 # cleat-ui — @cleat/ui Shared Component Library
 
-Svelte 5 component library for all cleat business apps and the cleat.run website. Published as `@cleat/ui`.
+Svelte 5 component library and theme for cleat-team's apps (clew's dashboard, cleat-apps, the cleat.run website). **This repo is the canonical `@cleat/ui`**: change it here first, tag a release, then bring each app's copy up to the tag. Not published to npm; apps carry a checked copy of a tag.
 
 ## Repo structure
 
 - `src/lib/` — All components and theme
   - `index.js` / `index.d.ts` — Barrel exports
-  - `theme.css` — OKLCH-based CSS custom properties (colors, typography, spacing, radius, shadows)
+  - `theme.css` — CSS custom properties: semantic tokens (the public API) over nautical material tokens, plus OKLCH scales, typography, spacing, radius, shadows; dark mode via `[data-theme="dark"]`
   - `Layout.svelte` — Shell with sidebar + top nav + content
   - `AppShell.svelte` — Simple themed container
-  - `Button.svelte`, `Form.svelte`, `Input.svelte`, `Card.svelte`, `Badge.svelte`, `Modal.svelte`, `Table.svelte`, `Tabs.svelte`
+  - `Button.svelte`, `Form.svelte`, `Input.svelte`, `Card.svelte`, `Badge.svelte`, `Modal.svelte`, `Table.svelte`, `Tabs.svelte`, `EmptyState.svelte`, `StatusDot.svelte`, `Loading.svelte`
+  - `__tests__/` — vitest component tests (`npm test`); `src/setup.ts` loads jest-dom's matchers
 
 ## Development conventions
 
@@ -28,8 +29,9 @@ Key conventions:
 
 ## Theme system
 
-- Colors use OKLCH space with 50-900 scale + base + foreground
-- Semantic colors: primary, secondary, success, warning, danger, info, neutral
+- Style: nautical, mid-century, flat (spec: clew's `docs/dashboard-redesign-plan.md`)
+- Components reference **semantic** tokens only (`--color-accent`, `--color-text`, `--color-surface`, `--color-border`, `--color-status-*`, ...); the **material** tokens (`--color-brass`, `--color-cream`, `--color-ink`, ...) are the defaults under them
+- OKLCH scales (50-900 + base + foreground) for primary, secondary, success, warning, danger, info, neutral
 - Typography: sans/mono font stacks, text size scale
 - Spacing: 4px base scale (--space-1 through --space-8)
 - Radius: sm/md/lg
