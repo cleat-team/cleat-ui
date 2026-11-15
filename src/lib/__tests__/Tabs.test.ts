@@ -37,4 +37,31 @@ describe('Tabs', () => {
     await screen.getByText('Tab Three').click();
     expect(fn).toHaveBeenCalledWith('tab3');
   });
+
+  // The marker sits under the active tab, not always under the first one: clew's Project settings opened on
+  // Reviewers with the marker on General (2026-11-15).
+  const marker = (container: HTMLElement) => container.querySelector<HTMLElement>('.tab-indicator');
+  const left = (container: HTMLElement) => parseFloat(marker(container)!.style.left);
+
+  it('puts the marker under the active tab', () => {
+    const { container } = render(Tabs, { props: { tabs, activeTab: 'tab2' } });
+    expect(left(container)).toBeCloseTo(100 / 3, 2);
+  });
+
+  it('moves the marker when the active tab changes', async () => {
+    const { container, rerender } = render(Tabs, { props: { tabs, activeTab: 'tab1' } });
+    expect(left(container)).toBeCloseTo(0, 2);
+    await rerender({ tabs, activeTab: 'tab3' });
+    expect(left(container)).toBeCloseTo(200 / 3, 2);
+  });
+
+  it('draws no marker when no tab is active', () => {
+    const { container } = render(Tabs, { props: { tabs, activeTab: 'nope' } });
+    expect(marker(container)).toBeNull();
+  });
+
+  it('draws no marker with no tabs', () => {
+    const { container } = render(Tabs, { props: { tabs: [], activeTab: '' } });
+    expect(marker(container)).toBeNull();
+  });
 });
