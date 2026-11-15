@@ -16,6 +16,11 @@
     onTabChange?: (id: string) => void;
   } = $props();
 
+  // The marker's place: one tab's width, and the active tab's index along the bar. No tab active (an empty or
+  // unknown activeTab) draws no marker, rather than one under a tab that isn't the active one.
+  const width = $derived(tabs.length > 0 ? 100 / tabs.length : 0);
+  const index = $derived(tabs.findIndex((t) => t.id === activeTab));
+
   function handleTabClick(id: string) {
     if (id !== activeTab && onTabChange) {
       onTabChange(id);
@@ -37,10 +42,12 @@
         {tab.label}
       </button>
     {/each}
-    <div
-      class="tab-indicator"
-      style="width: {100 / tabs.length}%"
-    ></div>
+    {#if index >= 0}
+      <div
+        class="tab-indicator"
+        style="width: {width}%; left: {width * index}%"
+      ></div>
+    {/if}
   </div>
 </div>
 
