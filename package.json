@@ -1,6 +1,6 @@
 {
   "name": "@cleat/ui",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "Shared Svelte 5 component library and theme for cleat-team's apps: clew, cleat-apps and the cleat.run website",
   "type": "module",
